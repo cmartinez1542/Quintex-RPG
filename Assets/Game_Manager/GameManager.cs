@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     public Transform[] spawnPoints;   // array of spawn points
     public Camera mainCamera; // Assign the temporary camera in Inspector
     public Sprite[] playerOutfits; // Array of outfit sprites
+    public Animator [] animator; // Array of animators
     public PlayerMovement movement;
     public RuntimeAnimatorController[] playerAnimatorControllers;
 

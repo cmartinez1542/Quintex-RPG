@@ -16,9 +16,10 @@ GameObject:
   - component: {fileID: 1115865554112427176}
   - component: {fileID: -2939031043792850966}
   - component: {fileID: -520607058049697640}
+  - component: {fileID: 7431236308421465479}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Players
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -241,8 +242,20 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 44086d41-c9ed-4c38-861d-e451128d2587
     m_ActionName: Player/OnJoin
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 6a4f0e59-e656-46c0-a314-b5830851050a
+    m_ActionName: 'Player 2/Movement[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d,/XInputControllerWindows/leftStick,/Keyboard/upArrow,/Keyboard/downArrow,/Keyboard/leftArrow,/Keyboard/rightArrow]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: bcdaa198-d699-4bca-96bd-0f43c9cfac05
+    m_ActionName: 'Player 2/Attack[/XInputControllerWindows/buttonSouth,/Keyboard/space]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 80a71eff-00b5-4e98-bdd4-1a0c2902f6d4
+    m_ActionName: Player 2/OnJoin
   m_NeverAutoSwitchControlSchemes: 1
-  m_DefaultControlScheme: Keyboard & Mouse
+  m_DefaultControlScheme: 
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
@@ -280,6 +293,22 @@ MonoBehaviour:
   joystick: {fileID: 0}
   player_combat: {fileID: 0}
   spriteRenderer: {fileID: 0}
+  attackRange: 0
+--- !u!114 &7431236308421465479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5752021519310341680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f58a27229e1d41e4b817f85b391273e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentHealth: 3
+  maxHealth: 3
+  slider: {fileID: 0}
 --- !u!1 &8971546386918817071
 GameObject:
   m_ObjectHideFlags: 0

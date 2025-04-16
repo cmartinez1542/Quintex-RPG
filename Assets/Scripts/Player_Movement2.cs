@@ -19,7 +19,10 @@ public class PlayerMovement2 : MonoBehaviour
 
     public static int playerCount = 0; // Cuenta global de jugadores
     public SpriteRenderer spriteRenderer;
-
+    private bool isKnockedBacked;
+    public int attackRange;
+    
+   
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -48,12 +51,24 @@ public class PlayerMovement2 : MonoBehaviour
     public void OnSlash(InputAction.CallbackContext context)
     {
         slashed = context.action.triggered;
+
         if (context.performed)
         {
             Debug.Log($" {gameObject.name} performed a slash!");
             player_combat.Attack();
         }
+
     }
+
+    public void OnSmash(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Debug.Log($"{gameObject.name} performed Rock Smash!");
+            player_combat.SmashAttack(); // or SmashAttack()
+        }
+    }
+        
 
     private void FixedUpdate()
     {
@@ -63,33 +78,38 @@ public class PlayerMovement2 : MonoBehaviour
             return;
         }
 
-        // Entrada por teclado y joystick
-        float horizontal = movementInput.x;
-        float vertical = movementInput.y;
+        if (isKnockedBacked == false)
+        {       
+            // Entrada por teclado y joystick
+            float horizontal = movementInput.x;
+            float vertical = movementInput.y;
 
-        if (joystick != null)
-        {
-            horizontal += joystick.Direction.x;
-            vertical += joystick.Direction.y;
+            if (joystick != null)
+            {
+                horizontal += joystick.Direction.x;
+                vertical += joystick.Direction.y;
+            }
+
+                    // Flip del sprite basado en dirección
+            if (horizontal > 0 && facingDirection < 0)
+                Flip();
+            else if (horizontal < 0 && facingDirection > 0)
+                Flip();
+
+            anim.SetFloat("horizontal", Mathf.Abs(horizontal));
+            anim.SetFloat("vertical", Mathf.Abs(vertical));
+
+            Vector2 move = new Vector2(horizontal, vertical).normalized;
+
+            rb.linearVelocity = move * speed;
+
+            Debug.Log($" Horizontal: {horizontal}");
+            Debug.Log($" Vertical: {vertical}");
+            Debug.Log($" Move direction: {move}");
+            Debug.Log($" FixedUpdate - Applying velocity: {rb.linearVelocity}");
         }
 
-        Vector2 move = new Vector2(horizontal, vertical).normalized;
 
-        rb.linearVelocity = move * speed;
-
-        Debug.Log($" Horizontal: {horizontal}");
-        Debug.Log($" Vertical: {vertical}");
-        Debug.Log($" Move direction: {move}");
-        Debug.Log($" FixedUpdate - Applying velocity: {rb.linearVelocity}");
-
-        // Flip del sprite basado en dirección
-        if (horizontal > 0 && facingDirection < 0)
-            Flip();
-        else if (horizontal < 0 && facingDirection > 0)
-            Flip();
-
-        anim.SetFloat("horizontal", Mathf.Abs(horizontal));
-        anim.SetFloat("vertical", Mathf.Abs(vertical));
 
 
         // Animaciones (opcional)
@@ -102,6 +122,27 @@ public class PlayerMovement2 : MonoBehaviour
     {
         facingDirection *= -1;
         transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
+    }
+
+    public void Knockback(Transform enemy, float force, float stunTime)
+    {
+        //disable player movement and add knockback
+        isKnockedBacked = true;
+        Vector2 direction = (transform.position - enemy.position).normalized;
+        rb.linearVelocity = direction * force;
+
+        Debug.Log($" Knockback force: {direction}");
+        Debug.Log($"[{gameObject.name}] Knockback started from {enemy.name}");
+
+        StartCoroutine(EndKnockback(stunTime));
+        
+    }
+
+    IEnumerator EndKnockback(float stunTime)
+    {
+        yield return new WaitForSeconds(stunTime);
+        isKnockedBacked = false;
+        rb.linearVelocity = Vector2.zero;
     }
 
     // Inicializar posición y atuendo
