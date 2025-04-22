@@ -54,14 +54,14 @@ AnimationClip:
   - time: 0.5
     functionName: FinishSecondAttack
     data: 
-    objectReferenceParameter: {fileID: 0}
+    objectReferenceParameter: {fileID: 2800000, guid: 30ae5df14e273a2428a69387a206d5c0, type: 3}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.5
     functionName: FinishAttacking
     data: 
-    objectReferenceParameter: {fileID: 0}
+    objectReferenceParameter: {fileID: 5752021519310341680, guid: ca9ea14edf83e004ab6e4c9e91826aa3, type: 3}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0

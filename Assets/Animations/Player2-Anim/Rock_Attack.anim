@@ -100,14 +100,14 @@ AnimationClip:
   - time: 0.2
     functionName: DealDamage
     data: 
-    objectReferenceParameter: {fileID: 0}
+    objectReferenceParameter: {fileID: 9100000, guid: 382422334060d1c4aaca86ae921beb5e, type: 2}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.5833333
     functionName: FinishSmashAttack
     data: 
-    objectReferenceParameter: {fileID: 0}
+    objectReferenceParameter: {fileID: 9100000, guid: 382422334060d1c4aaca86ae921beb5e, type: 2}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0

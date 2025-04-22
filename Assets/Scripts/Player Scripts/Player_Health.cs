@@ -16,15 +16,19 @@ public class Player_Health : MonoBehaviour
         slider.value = currentHealth;
     }
 
-    public void ChangeHealth (int amount)
-    {
-        currentHealth += amount;
-        slider.value = currentHealth;
+public void ChangeHealth(int amount)
+{
+    currentHealth += amount;
+    slider.value = currentHealth;
 
-        if (currentHealth <= 0)
-        {
-            gameObject.SetActive(false);
-        } 
+    Debug.Log($"[💔] Vida actual: {currentHealth} / {maxHealth}");
+
+    if (currentHealth <= 0)
+    {
+        Debug.Log("☠️ El jugador ha muerto.");
+        gameObject.SetActive(false);
     }
+}
+
 
 }

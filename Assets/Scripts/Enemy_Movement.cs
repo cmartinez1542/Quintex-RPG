@@ -65,7 +65,7 @@ public Vector3 attackPointOffset = new Vector3(1.5f, 0f, 0f);
     float speed = rb.linearVelocity.magnitude;
     anim.SetFloat("Speed", speed);
 
-    if (isKnockedBack) return; //  No moverse si está siendo empujado
+    if (isKnockedBack) return; // ⛔ No moverse si está siendo empujado
 
     if (player != null)
     {
@@ -213,3 +213,4 @@ public void ApplyKnockback(Vector2 direction, float force, float duration)
 
 
 }
+
