@@ -274,6 +274,10 @@ MonoBehaviour:
   anim: {fileID: 9122416808095526952}
   attackState: 0
   audiomanager: {fileID: 0}
+  knockbackForce: 10
+  attackRange: 1
+  stunTime: 1
+  damage: 1
 --- !u!114 &-520607058049697640
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -307,7 +311,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentHealth: 3
-  maxHealth: 3
+  maxHealth: 10
   slider: {fileID: 0}
 --- !u!1 &8971546386918817071
 GameObject:

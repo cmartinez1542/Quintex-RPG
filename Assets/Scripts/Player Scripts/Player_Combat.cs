@@ -11,6 +11,8 @@ public class Player_Combat : MonoBehaviour
     public float attackRange = 1f;
     public int stunTime = 1;
     public int damage = 1;
+    public BoxCollider2D swordCollider;
+    public LayerMask targetLayer;
 
     public void Attack()
     {   
@@ -27,6 +29,7 @@ public class Player_Combat : MonoBehaviour
        // }
     }
 
+    // Deal Damage using player rigid body and Attack range (ThunderStrike/RockSmash)
     public void DealDamage()
     {
         Debug.Log($"[{gameObject.name}] Checking for targets in range {attackRange}");
@@ -39,7 +42,7 @@ public class Player_Combat : MonoBehaviour
         {
             Debug.Log($"[{gameObject.name}] Hit: {hit.name}, Tag: {hit.tag}");
 
-            if (hit.gameObject != gameObject && hit.CompareTag("Player"))
+            if (hit.gameObject != gameObject && hit.CompareTag("Player") || hit.CompareTag("Eenemy"))
             {
                 Debug.Log($"[{gameObject.name}] Target is a valid Player! Applying knockback.");
 
@@ -48,6 +51,8 @@ public class Player_Combat : MonoBehaviour
                 {
                     otherPlayer.Knockback(transform, knockbackForce,stunTime);
                     hit.GetComponent<Player_Health>().ChangeHealth(-damage);
+                    CameraShake.Instance.Shake();
+
                     Debug.Log($"[{gameObject.name}] Knockback called on {hit.name}");
                 }
                 else
@@ -57,6 +62,38 @@ public class Player_Combat : MonoBehaviour
 
 
   
+            }
+        }
+    }
+
+
+
+    public void DealDamageSword()
+    {
+        Debug.Log($"[{gameObject.name}] Checking for targets using sword collider");
+
+        // Get the world position and size of the sword collider
+        Vector2 swordPos = swordCollider.bounds.center;
+        Vector2 swordSize = swordCollider.bounds.size;
+
+        // Check for players in the sword’s hitbox
+        Collider2D[] hits = Physics2D.OverlapBoxAll(swordCollider.bounds.center, swordCollider.bounds.size, targetLayer);
+
+        Debug.Log($"[{gameObject.name}] Detected {hits.Length} targets");
+
+        foreach (var hit in hits)
+        {
+            if (hit.gameObject != gameObject && hit.CompareTag("Player"))
+            {
+                Debug.Log($"[{gameObject.name}] Hit player: {hit.name}");
+
+                PlayerMovement2 otherPlayer = hit.GetComponent<PlayerMovement2>();
+                if (otherPlayer != null)
+                {
+                    otherPlayer.Knockback(transform, knockbackForce, stunTime);
+                    hit.GetComponent<Player_Health>().ChangeHealth(-damage);
+                    Debug.Log($"[{gameObject.name}] Damage applied to {hit.name}");
+                }
             }
         }
     }
@@ -75,17 +112,17 @@ public class Player_Combat : MonoBehaviour
     }
 
     public void SmashAttack()
-{    
-    knockbackForce = 5f;
-    attackRange = 2f;  
-    anim.SetBool("Attack2", true);
-    attackState = anim.GetBool("Attack2");
-    Debug.Log($"{gameObject.name} used Rock Smash!");
+    {    
+        knockbackForce = 5f;
+        attackRange = 2f;  
+        anim.SetBool("Attack2", true);
+        attackState = anim.GetBool("Attack2");
+        Debug.Log($"{gameObject.name} used Rock Smash!");
 
-    // anim.SetTrigger("RockSmash"); only if you use a different animation trigger
+        // anim.SetTrigger("RockSmash"); only if you use a different animation trigger
 
-    // Call your magic/aoe/damage logic here (like area hitbox, spawn rock effect, etc.)
-}
+        // Call your magic/aoe/damage logic here (like area hitbox, spawn rock effect, etc.)
+    }
 
     public void FinishSmashAttack()
     {

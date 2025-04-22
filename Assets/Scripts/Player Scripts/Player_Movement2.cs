@@ -97,7 +97,7 @@ public class PlayerMovement2 : MonoBehaviour
                 Flip();
 
             anim.SetFloat("horizontal", Mathf.Abs(horizontal));
-            anim.SetFloat("vertical", Mathf.Abs(vertical));
+            anim.SetFloat("vertical", vertical);
 
             Vector2 move = new Vector2(horizontal, vertical).normalized;
 
