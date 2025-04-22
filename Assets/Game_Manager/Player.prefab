@@ -169,7 +169,7 @@ Animator:
   m_GameObject: {fileID: 5752021519310341680}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 382422334060d1c4aaca86ae921beb5e, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -193,7 +193,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 474960bd327f6924fbc5367a9e60f0c3, type: 3}
+  m_Actions: {fileID: 0}
   m_NotificationBehavior: 2
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
@@ -271,9 +271,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2b631d8382f09043890bb32848810c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackPoint: {fileID: 0}
   anim: {fileID: 9122416808095526952}
   attackState: 0
   audiomanager: {fileID: 0}
+  knockbackForce: 1
+  attackRange: 1
+  stunTime: 0.2
+  damage: 1
 --- !u!114 &-520607058049697640
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287,7 +292,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
-  rb: {fileID: 0}
+  rb: {fileID: 4831464117353828410}
   anim: {fileID: 9122416808095526952}
   facingDirection: 1
   joystick: {fileID: 0}

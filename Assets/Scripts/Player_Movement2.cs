@@ -23,24 +23,29 @@ public class PlayerMovement2 : MonoBehaviour
     public int attackRange;
     
    
-    private void Start()
+   private void Start()
+{
+    rb = GetComponent<Rigidbody2D>();
+    if (rb == null)
     {
-        rb = GetComponent<Rigidbody2D>();
-
-        if (rb == null)
-        {
-            Debug.LogError(" Rigidbody2D is missing on " + gameObject.name);
-        }
-
-        player_combat = GetComponent<Player_Combat>();
-
-        if (player_combat == null)
-        {
-            Debug.LogError(" Player_Combat script is missing on " + gameObject.name);
-        }
-
-        playerCount++; // Incrementar conteo de jugadores para asignar atuendos
+        Debug.LogError("Rigidbody2D is missing on " + gameObject.name);
     }
+
+    anim = GetComponent<Animator>();
+    if (anim == null)
+    {
+        Debug.LogError("Animator is missing on " + gameObject.name);
+    }
+
+    player_combat = GetComponent<Player_Combat>();
+    if (player_combat == null)
+    {
+        Debug.LogError("Player_Combat script is missing on " + gameObject.name);
+    }
+
+    playerCount++; // Incrementar conteo de jugadores para asignar atuendos
+}
+
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -101,7 +106,8 @@ public class PlayerMovement2 : MonoBehaviour
 
             Vector2 move = new Vector2(horizontal, vertical).normalized;
 
-            rb.linearVelocity = move * speed;
+          rb.linearVelocity = move * speed;
+
 
             Debug.Log($" Horizontal: {horizontal}");
             Debug.Log($" Vertical: {vertical}");
@@ -124,26 +130,26 @@ public class PlayerMovement2 : MonoBehaviour
         transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
     }
 
-    public void Knockback(Transform enemy, float force, float stunTime)
-    {
-        //disable player movement and add knockback
-        isKnockedBacked = true;
-        Vector2 direction = (transform.position - enemy.position).normalized;
-        rb.linearVelocity = direction * force;
+public void Knockback(Transform enemy, float force, float stunTime)
+{
+    Debug.Log("Knockback triggered!");
 
-        Debug.Log($" Knockback force: {direction}");
-        Debug.Log($"[{gameObject.name}] Knockback started from {enemy.name}");
+    isKnockedBacked = true;
 
-        StartCoroutine(EndKnockback(stunTime));
-        
-    }
+    Vector2 direction = (transform.position - enemy.position).normalized;
 
-    IEnumerator EndKnockback(float stunTime)
-    {
-        yield return new WaitForSeconds(stunTime);
-        isKnockedBacked = false;
-        rb.linearVelocity = Vector2.zero;
-    }
+    // Aplica fuerza en forma de impulso
+    rb.AddForce(direction * force, ForceMode2D.Impulse);
+
+    StartCoroutine(EndKnockback(stunTime));
+}
+
+IEnumerator EndKnockback(float stunTime)
+{
+    yield return new WaitForSeconds(stunTime);
+    isKnockedBacked = false;
+}
+
 
     // Inicializar posición y atuendo
     public void InitializePlayer(Vector3 spawnPosition, Sprite outfit)
