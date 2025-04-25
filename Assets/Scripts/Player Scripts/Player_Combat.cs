@@ -7,7 +7,7 @@ public class Player_Combat : MonoBehaviour
 {
 
     private bool canAttack = true;
-public float attackCooldown = 0.8f; // Tiempo de espera entre ataques
+    public float attackCooldown = 0.0f; // Tiempo de espera entre ataques
 
     public Transform attackPoint;
 
@@ -15,8 +15,9 @@ public float attackCooldown = 0.8f; // Tiempo de espera entre ataques
     public bool attackState;
     public AudioManager audiomanager;
     public float knockbackForce = 3f;
+    public float PknockbackForce;
     public float attackRange = 1f;
-    public float stunTime = 0.2f;
+    public float stunTime = 0.07f;
     public int damage = 1;
     public BoxCollider2D swordCollider;
     public LayerMask targetLayer;
@@ -29,12 +30,21 @@ public float attackCooldown = 0.8f; // Tiempo de espera entre ataques
     StartCoroutine(ResetAttackCooldown()); // Empezar la espera
 
         knockbackForce = 3f;
+        PknockbackForce = 5f;
         attackRange = 1f;
+        CameraShake.Instance.shakeDuration = 0.1f;
+        CameraShake.Instance.shakeMagnitude = 0.1f; // <- Stronger shake
         anim.SetBool("isAttacking", true);
         attackState = anim.GetBool("isAttacking");
+
+
+        
+
+
         Debug.Log("Attack Started: isAttacking set to " + attackState);
         
-         DealDamage(); // Aplica daño
+        
+
     // audiomanager.PlayAttackSound();
     }
 
@@ -88,11 +98,22 @@ public float attackCooldown = 0.8f; // Tiempo de espera entre ataques
                 Debug.Log($"[{gameObject.name}] Target is a valid Player! Applying knockback.");
 
                 PlayerMovement2 otherPlayer = hit.GetComponent<PlayerMovement2>();
+                PlayerMovement2 playerMovement = GetComponent<PlayerMovement2>();
+
                 if (otherPlayer != null)
                 {
                     otherPlayer.Knockback(transform, knockbackForce,stunTime);
+
+                            // Knockback to self (reverse direction)
+                    Vector2 selfDirection = (transform.position - hit.transform.position).normalized;
+                    GetComponent<Rigidbody2D>().linearVelocity = selfDirection * PknockbackForce;
+                     Vector2 knockDir = (hit.transform.position - transform.position).normalized;
+                    playerMovement.Knockback(transform, PknockbackForce, stunTime);
+
                     hit.GetComponent<Player_Health>().ChangeHealth(-damage);
                     Debug.Log($"[{gameObject.name}] Knockback called on {hit.name}");
+                    CameraShake.Instance.Shake();
+
                 }
                 else
                 {
@@ -104,7 +125,7 @@ public float attackCooldown = 0.8f; // Tiempo de espera entre ataques
                 Enemy_Health enemy = hit.GetComponent<Enemy_Health>();
                 if (enemy != null)
                 {
-                    Debug.Log("💥 Enemy_Health encontrado");
+                    Debug.Log(" Enemy_Health encontrado");
                     enemy.TakeDamage(damage);
                 }
 
@@ -112,9 +133,21 @@ public float attackCooldown = 0.8f; // Tiempo de espera entre ataques
             Enemy_Movement enemyMove = hit.GetComponent<Enemy_Movement>();
             if (enemyMove != null)
             {
+                PlayerMovement2 playerMovement = GetComponent<PlayerMovement2>();
                 Vector2 knockDir = (hit.transform.position - transform.position).normalized;
                 enemyMove.ApplyKnockback(knockDir, knockbackForce, stunTime);
-                Debug.Log($"🌀 Knockback con stun aplicado a {hit.name}");
+                Debug.Log($" Knockback con stun aplicado a {hit.name}");
+
+                // Knockback to self (reverse direction)
+                Vector2 selfDirection = (transform.position - hit.transform.position).normalized;
+                GetComponent<Rigidbody2D>().linearVelocity = selfDirection * PknockbackForce;
+                playerMovement.Knockback(transform, PknockbackForce, stunTime);
+
+                //GetComponent<Rigidbody2D>().linearVelocity = selfDirection * PknockbackForce;
+
+                // Camara Shake
+                CameraShake.Instance.Shake();
+
             }
 
   
@@ -139,6 +172,8 @@ public float attackCooldown = 0.8f; // Tiempo de espera entre ataques
 {    
     knockbackForce = 5f;
     attackRange = 2f;  
+    CameraShake.Instance.shakeMagnitude = 0.3f; // <- Stronger shake
+    CameraShake.Instance.shakeDuration = 0.2f;
     anim.SetBool("Attack2", true);
     attackState = anim.GetBool("Attack2");
     Debug.Log($"{gameObject.name} used Rock Smash!");

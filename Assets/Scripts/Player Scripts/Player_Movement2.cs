@@ -21,6 +21,7 @@ public class PlayerMovement2 : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     private bool isKnockedBacked;
     public int attackRange;
+  
     
    
    private void Start()
@@ -83,11 +84,18 @@ public class PlayerMovement2 : MonoBehaviour
             return;
         }
 
+
+
         if (isKnockedBacked == false)
         {       
+            
             // Entrada por teclado y joystick
             float horizontal = movementInput.x;
             float vertical = movementInput.y;
+
+            rb.linearVelocity = new Vector2(horizontal * speed, vertical * speed);
+
+            
 
             if (joystick != null)
             {
@@ -106,7 +114,8 @@ public class PlayerMovement2 : MonoBehaviour
 
             Vector2 move = new Vector2(horizontal, vertical).normalized;
 
-          rb.linearVelocity = move * speed;
+            rb.linearVelocity = move * speed;
+            
 
 
             Debug.Log($" Horizontal: {horizontal}");
@@ -142,6 +151,7 @@ public void Knockback(Transform enemy, float force, float stunTime)
     rb.AddForce(direction * force, ForceMode2D.Impulse);
 
     StartCoroutine(EndKnockback(stunTime));
+    
 }
 
 IEnumerator EndKnockback(float stunTime)
