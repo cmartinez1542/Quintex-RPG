@@ -32,7 +32,7 @@ public float attackCooldown = 0.8f; // Tiempo de espera entre ataques
         attackState = anim.GetBool("isAttacking");
         Debug.Log("Attack Started: isAttacking set to " + attackState);
         
-         DealDamage(); // Aplica daño
+        
     // audiomanager.PlayAttackSound();
     }
 
@@ -53,7 +53,8 @@ foreach (var hit in hits)
     if (enemy != null)
     {
         Debug.Log("💥 Enemy_Health encontrado");
-        enemy.TakeDamage(damage);
+        enemy.TakeDamage(damage, transform);
+
     }
 
     // Aplicar knockback si tiene Rigidbody2D

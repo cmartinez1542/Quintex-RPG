@@ -215,7 +215,7 @@ MonoBehaviour:
   player: {fileID: 0}
   detectionRange: 15
   stopDistance: 4
-  moveSpeed: 4
+  moveSpeed: 2
   attackPointOffset: {x: 1.5, y: 0, z: 0}
 --- !u!1 &5174043058936190629
 GameObject:

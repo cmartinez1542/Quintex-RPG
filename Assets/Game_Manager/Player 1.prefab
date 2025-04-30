@@ -737,6 +737,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2b631d8382f09043890bb32848810c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackCooldown: 0.8
   attackPoint: {fileID: 2527003799441664197}
   anim: {fileID: 7902938004808048526}
   attackState: 0

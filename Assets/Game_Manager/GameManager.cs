@@ -4,59 +4,30 @@ using UnityEngine.InputSystem;
 public class GameManager : MonoBehaviour
 {
     public GameObject playerPrefab;
-    public Transform[] spawnPoints;   // array of spawn points
-    public Camera mainCamera; // Assign the temporary camera in Inspector
-    public Sprite[] playerOutfits; // Array of outfit sprites
-    public Animator [] animator; // Array of animators
+    public Transform[] spawnPoints;
+    public Camera mainCamera;
+    public Sprite[] playerOutfits;
+    public Animator[] animator;
     public PlayerMovement movement;
     public RuntimeAnimatorController[] playerAnimatorControllers;
 
-
-
-        private void Update()
-    {
-        // Debug: Check if any keyboard input is detected
-
-    }
-
     private void Start()
     {
-        // Checks if a player has touch a button to join
         PlayerInputManager.instance.onPlayerJoined += OnPlayerJoined;
-        
-        //PlayerInputManager.instance.JoinPlayer();
-        //PlayerInputManager.instance.JoinPlayer();
 
-
-        // Debug Arrays
         Debug.Log("Spawn Points Count: " + spawnPoints.Length);
         Debug.Log("Player Outfits Count: " + playerOutfits.Length);
-
-        
     }
 
     public void OnPlayerJoined(PlayerInput playerInput)
     {
-
         Rigidbody2D rbCheck = playerInput.GetComponent<Rigidbody2D>();
 
-        
         Debug.Log("Player joined: " + playerInput.playerIndex);
 
-
-        // Assign a spawn point
-
         int index = (PlayerInputManager.instance.playerCount - 1) % spawnPoints.Length;
-
-        // logic to initialize in player_mov script 
-        Sprite outfit = (index < playerOutfits.Length) ? playerOutfits[index] : null;
-        
-        PlayerMovement movement = playerInput.GetComponent<PlayerMovement>();
-        
-        Debug.Log("Assigning player to spawn point: " + index);
         playerInput.transform.position = spawnPoints[index].position;
 
-        // Assign different outfits
         SpriteRenderer spriteRenderer = playerInput.GetComponentInChildren<SpriteRenderer>();
         if (spriteRenderer != null && playerOutfits.Length > index)
         {
@@ -68,14 +39,17 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning("No sprite found or index out of range for player " + index);
         }
 
-        // Assign camara to a player
+  
         if (mainCamera != null && PlayerInputManager.instance.playerCount == 1)
         {
-            mainCamera.transform.SetParent(playerInput.transform);
-            mainCamera.transform.localPosition = new Vector3(0, 0, -10);
+            CameraController camController = mainCamera.GetComponent<CameraController>();
+            if (camController != null)
+            {
+                camController.SetTarget(playerInput.transform);
+            }
         }
 
-        // Assign Animator Controller based on player index
+        // Asigna Animator Controller por índice
         Animator animator = playerInput.GetComponentInChildren<Animator>(true);
         if (animator != null && playerAnimatorControllers.Length > index)
         {
