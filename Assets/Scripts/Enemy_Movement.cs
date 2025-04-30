@@ -13,7 +13,7 @@ public class Enemy_Movement : MonoBehaviour
     public int damage = 1;
     public Transform attackPoint;
     public float weaponRange = 1f;
-    public float knockbackForce = 2f;
+    public float knockbackForce = 4f;
     public float stunTime = 1f;
 
     private Animator anim;
@@ -24,6 +24,10 @@ public class Enemy_Movement : MonoBehaviour
     public float detectionRange = 5f;
     public float stopDistance = 1.5f;
     public float moveSpeed = 2f;
+
+    [Header("Stun Settinngs")]
+    public SpriteRenderer spriteRenderer; // Drag your enemy's SpriteRenderer in Inspector
+
 public Vector3 attackPointOffset = new Vector3(1.5f, 0f, 0f);
 
     private void Start()
@@ -41,6 +45,32 @@ public Vector3 attackPointOffset = new Vector3(1.5f, 0f, 0f);
                 player = GetClosestPlayer(players).transform;
         }
     }
+
+    public void FlashWhiteBlink(float totalDuration, float blinkSpeed = 10.5f)
+    {
+        StartCoroutine(BlinkCoroutine(totalDuration, blinkSpeed));
+    }
+
+    private IEnumerator BlinkCoroutine(float totalDuration, float blinkSpeed)
+    {
+        float elapsed = 0f;
+        Color originalColor = spriteRenderer.color;
+
+        while (elapsed < totalDuration)
+        {
+            spriteRenderer.color = Color.red;
+            yield return new WaitForSeconds(blinkSpeed);
+
+            spriteRenderer.color = originalColor;
+            yield return new WaitForSeconds(blinkSpeed);
+
+            elapsed += blinkSpeed * 2;
+        }
+
+        spriteRenderer.color = originalColor; // ensure it resets
+    }
+
+
 
     private GameObject GetClosestPlayer(GameObject[] players)
     {
@@ -207,6 +237,7 @@ public void ApplyKnockback(Vector2 direction, float force, float duration)
     {
         isKnockedBack = true;
         rb.AddForce(direction.normalized * force, ForceMode2D.Impulse);
+        FlashWhiteBlink((stunTime / 2), 0.3f);
         StartCoroutine(RecoverFromKnockback(duration));
     }
 }

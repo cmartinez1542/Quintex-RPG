@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: -2939031043792850966}
   - component: {fileID: -520607058049697640}
   - component: {fileID: 7431236308421465479}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Players
   m_Icon: {fileID: 0}
@@ -271,6 +271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2b631d8382f09043890bb32848810c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackCooldown: 0.8
   attackPoint: {fileID: 0}
   anim: {fileID: 9122416808095526952}
   attackState: 0
@@ -279,6 +280,10 @@ MonoBehaviour:
   attackRange: 1
   stunTime: 0.2
   damage: 1
+  swordCollider: {fileID: 0}
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &-520607058049697640
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -326,7 +331,7 @@ GameObject:
   - component: {fileID: 4924128001193708723}
   - component: {fileID: 3212883199933051556}
   - component: {fileID: 1789222014646636876}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
