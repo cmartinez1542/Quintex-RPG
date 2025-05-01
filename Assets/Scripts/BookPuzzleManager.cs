@@ -1,18 +1,22 @@
+using System.Collections;
 using UnityEngine;
 
 public class BookPuzzleManager : MonoBehaviour
 {
-
-    public GameObject puzzleUIPanel;         // el panel de libros (Canvas)
-public GameObject exclamationIcon;       // el signo de admiración
-public GameObject puzzleTriggerObject;   // el GameObject con PuzzleTrigger.cs
-public Transform enemySpawnPoint;        // lugar donde aparecerán los enemigos
-public GameObject[] enemiesToSpawn;      // los enemigos (prefabs o ya en escena y desactivados)
-public BookVisual[] sceneBooks;          // los libros fuera del puzzle que deben reflejar el orden
-
+    public GameObject puzzleUIPanel;
+    public GameObject exclamationIcon;
+    public GameObject puzzleTriggerObject;
+    public Transform enemySpawnPoint;
+    public GameObject singleEnemy; // ← SOLO UN ENEMIGO
+    public GameObject thunderEffectPrefab; // ← Prefab de trueno
+    public Camera mainCamera; // ← Cámara principal
+    public float cameraFocusDuration = 2f; // Cuánto tiempo la cámara enfoca al enemigo
+    public BookVisual[] sceneBooks;
 
     public static BookPuzzleManager Instance;
     public BookPuzzleSlot[] slots;
+
+    private Vector3 originalCameraPos;
 
     private void Awake()
     {
@@ -21,40 +25,63 @@ public BookVisual[] sceneBooks;          // los libros fuera del puzzle que debe
 
     public void CheckSolution()
     {
-        string[] correctOrder = { "yellow","blue", "black", "green", "red" }; // ajusta según tu puzzle
+        string[] correctOrder = { "yellow", "blue", "black", "green", "red" };
 
-     for (int i = 0; i < slots.Length; i++)
-    {
-        if (slots[i].bookID != correctOrder[i])
+        for (int i = 0; i < slots.Length; i++)
         {
-            Debug.Log("❌ Orden incorrecto");
-            return;
+            if (slots[i].bookID != correctOrder[i])
+            {
+                Debug.Log("❌ Orden incorrecto");
+                return;
+            }
         }
+
+        Debug.Log("✅ Puzzle resuelto");
+
+        puzzleUIPanel.SetActive(false);
+        Time.timeScale = 1f;
+        exclamationIcon.SetActive(false);
+        puzzleTriggerObject.SetActive(false);
+
+        for (int i = 0; i < sceneBooks.Length; i++)
+        {
+            sceneBooks[i].SetBook(slots[i].bookID, slots[i].image.sprite);
+        }
+
+        StartCoroutine(EnemySpawnSequence());
     }
 
-    Debug.Log("✅ Puzzle resuelto");
+private IEnumerator EnemySpawnSequence()
+{
+    originalCameraPos = mainCamera.transform.position;
+    Vector3 focusPosition = new Vector3(enemySpawnPoint.position.x, enemySpawnPoint.position.y, originalCameraPos.z);
 
-    // 🔴 1. Cerrar el canvas del puzzle
-    puzzleUIPanel.SetActive(false);
-    Time.timeScale = 1f;
+    // 🔄 Mover suavemente la cámara al enemigo
+    yield return StartCoroutine(MoveCameraSmooth(mainCamera.transform, originalCameraPos, focusPosition, 1f));
 
-    // 🔴 2. Desactivar el signo de admiración
-    exclamationIcon.SetActive(false);
+    // ⚡ Trueno
+    Instantiate(thunderEffectPrefab, enemySpawnPoint.position, Quaternion.identity);
+    yield return new WaitForSeconds(1f);
 
-    // 🔴 3. Desactivar el trigger para no volver a entrar
-    puzzleTriggerObject.SetActive(false);
+    // 👹 Activar enemigo
+    singleEnemy.SetActive(true);
 
-    // 🔴 4. Instanciar enemigos
-    foreach (GameObject enemy in enemiesToSpawn)
-    {
-        enemy.SetActive(true); // si ya están en escena desactivados
-        // O instanciar: Instantiate(enemy, enemySpawnPoint.position, Quaternion.identity);
-    }
+    // Esperar para que el jugador lo vea
+    yield return new WaitForSeconds(cameraFocusDuration);
 
-    // 🔴 5. Reflejar los libros en la escena
-    for (int i = 0; i < sceneBooks.Length; i++)
-    {
-        sceneBooks[i].SetBook(slots[i].bookID, slots[i].image.sprite);
-    }
+    // 🔄 Volver cámara a su posición original
+    yield return StartCoroutine(MoveCameraSmooth(mainCamera.transform, focusPosition, originalCameraPos, 1f));
 }
+private IEnumerator MoveCameraSmooth(Transform cam, Vector3 from, Vector3 to, float duration)
+{
+    float elapsed = 0f;
+    while (elapsed < duration)
+    {
+        cam.position = Vector3.Lerp(from, to, elapsed / duration);
+        elapsed += Time.deltaTime;
+        yield return null;
+    }
+    cam.position = to; // asegurar posición final exacta
+}
+
 }
