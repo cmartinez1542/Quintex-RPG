@@ -193,19 +193,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackPoint: {fileID: 8206437949796927896}
   weaponRange: 2
-  damage: 5
+  damage: 3
   knockbackForce: 40
   stunTime: 1
   currentState: 1
+  anim: {fileID: 0}
   arrowPrefab: {fileID: 4099182473418217388, guid: 62aa8faabdd4ced41b4e56efc77269ed, type: 3}
   firePoint: {fileID: 5397864111238848359}
-  arrowRate: 0.2
+  arrowRate: 0.5
   arrowDuration: 10
+  retreatDuration: 1.2
+  retreatSpeed: 10
+  prepareDuration: 0.5
+  SemiBossAttackSound: {fileID: 0}
   swordDuration: 30
   moveSpeed: 3
   attackRange: 20
-  stopDistance: 1.5
+  stopDistance: 1.3
   maxHealth: 100
+  stateTimer: 0
+  isVulnerable: 0
 --- !u!114 &5454919457175095345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -218,7 +225,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f58511f74d02d7d4fa282edfe8b406f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthDropPrefab: {fileID: 5933023760265410480}
+  healthDropPrefab: {fileID: 3744771398856362147, guid: 6b5f8d4e1ba0164419580f331bcce3bb, type: 3}
+  puzzleDoor: {fileID: 0}
   currentHealth: 100
 --- !u!1 &7940320396097068557
 GameObject:

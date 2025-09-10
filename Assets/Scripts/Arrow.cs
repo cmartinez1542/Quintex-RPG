@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Arrow : MonoBehaviour
 {
+   public AudioSource hitSound;
+public AudioSource trowSound;
     public float speed = 5f;
     public float lifeTime = 3f;
 
@@ -18,6 +20,11 @@ public class Arrow : MonoBehaviour
     void Start()
     {
         Destroy(gameObject, lifeTime);
+          if (trowSound != null)
+    {
+        trowSound.Play();
+    }
+
     }
 
     void Update()
@@ -33,21 +40,33 @@ void OnTriggerEnter2D(Collider2D collision)
 
         if (playerHealth != null)
         {
-            playerHealth.ChangeHealth(-1); // o usa -damage si tienes variable pública
-            Debug.Log("✅ Flecha hizo daño al jugador.");
+            playerHealth.ChangeHealth(-1); 
+            Debug.Log("Flecha hizo daño al jugador.");
         }
 
-        // Opcional: si tienes un PlayerMovement2 y quieres aplicar knockback:
         PlayerMovement2 playerMovement = collision.GetComponent<PlayerMovement2>();
         if (playerMovement != null)
         {
             Vector2 knockDir = (collision.transform.position - transform.position).normalized;
-            playerMovement.Knockback(transform, 2f, 0.5f); // usa los mismos valores que tu melee
+            playerMovement.Knockback(transform, 50f, 0.5f); 
         }
     }
 
-    Destroy(gameObject);
+    // Reproducir sonido si existe
+    if (hitSound != null)
+    {
+        hitSound.Play();
+    }
+
+    // Desactivar el objeto en vez de destruirlo inmediatamente
+    GetComponent<SpriteRenderer>().enabled = false;
+    GetComponent<Collider2D>().enabled = false;
+    speed = 0f;
+
+    // Destruir después de que suene el clip
+    Destroy(gameObject, hitSound.clip.length);
 }
 
+  
 
 }

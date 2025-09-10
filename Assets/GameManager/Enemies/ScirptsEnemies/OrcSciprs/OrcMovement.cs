@@ -5,7 +5,8 @@ using System.Collections.Generic;
 public class OrcMovement : MonoBehaviour
 {
      public SpriteRenderer spriteRenderer; 
-
+    public AudioSource OrcSound;
+    public AudioSource hitOrcSound;
     private bool isKnockedBack = false;
     private bool isAttacking = false;
     private bool isCoolingDown = false;
@@ -34,6 +35,10 @@ public class OrcMovement : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+                if (OrcSound != null)
+    {
+        OrcSound.Play();
+    }
     }
 
     private void Update()
@@ -45,6 +50,11 @@ public class OrcMovement : MonoBehaviour
                 player = GetClosestPlayer(players).transform;
         }
     }
+
+     public void OrcHitSound()
+      {
+         hitOrcSound.Play();
+      }
 
     private void FixedUpdate()
     {
@@ -101,9 +111,10 @@ public class OrcMovement : MonoBehaviour
         if (anim != null)
             anim.SetTrigger("Attack");
 
+
         yield return new WaitForSeconds(attackCooldown);
 
-        ApplyAttackDamage();
+       
 
         isAttacking = false;
         isCoolingDown = true;
@@ -128,7 +139,7 @@ private HashSet<GameObject> alreadyDamaged = new HashSet<GameObject>();
 
 public void ApplyAttackDamage()
 {
-    alreadyDamaged.Clear(); // vaciar antes del ataque
+    alreadyDamaged.Clear(); 
 
     Collider2D[] hits = Physics2D.OverlapCircleAll(
         attackPoint.position, weaponRange, LayerMask.GetMask("Player"));
@@ -148,6 +159,7 @@ public void ApplyAttackDamage()
             if (playerMovement != null)
                 playerMovement.Knockback(transform, knockbackForce, stunTime);
         }
+
     }
 }
 

@@ -57,7 +57,7 @@ void Update()
         HandleCombatMovement(distance);
         FlipToFacePlayer();
 
-        // 🔥 Dispara SIEMPRE que esté dentro del rango de detección
+        //  Dispara SIEMPRE que esté dentro del rango de detección
         if (!isAttacking && cooldownTimer <= 0f)
             StartCoroutine(ShootArrow());
     }
@@ -134,10 +134,12 @@ void HandleCombatMovement(float distance)
     {
         float elapsed = 0f;
         Color originalColor = spriteRenderer.color;
+       
 
         while (elapsed < totalDuration)
         {
-            spriteRenderer.color = Color.red;
+            spriteRenderer.color = Color.white * 100f; // Muy blanco
+
             yield return new WaitForSeconds(blinkSpeed);
 
             spriteRenderer.color = originalColor;

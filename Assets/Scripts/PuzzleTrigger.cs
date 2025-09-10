@@ -4,7 +4,7 @@ public class PuzzleTrigger : MonoBehaviour
 {
     public GameObject exclamationIcon;
     public GameObject puzzleUIPanel;
-
+    private MonoBehaviour playerMovementScript;
     private bool playerInRange = false;
 
     void Start()
@@ -13,14 +13,26 @@ public class PuzzleTrigger : MonoBehaviour
         puzzleUIPanel.SetActive(false);
     }
 
-    void Update()
+void Update()
+{
+    if (playerInRange && Input.GetKeyDown(KeyCode.Space))
     {
-        if (playerInRange && Input.GetKeyDown(KeyCode.Space))
+        puzzleUIPanel.SetActive(true);
+
+        // 🔍 Buscar el jugador si aún no está asignado
+        if (playerMovementScript == null)
         {
-            puzzleUIPanel.SetActive(true);
-            Time.timeScale = 0f; // Pausar el juego
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+                playerMovementScript = playerObj.GetComponent<PlayerMovement2>(); // ← Cambia esto si tiene otro nombre
         }
+
+        // 🔒 Desactivar movimiento del jugador
+        if (playerMovementScript != null)
+            playerMovementScript.enabled = false;
     }
+}
+
 
     private void OnTriggerEnter2D(Collider2D other)
     {

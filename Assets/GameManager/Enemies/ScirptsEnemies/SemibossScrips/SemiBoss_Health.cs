@@ -3,107 +3,120 @@ using System.Collections;
 
 public class SemiBoss_Health : MonoBehaviour
 {
-   public GameObject healthDropPrefab; // El prefab del steak
-
+    public GameObject healthDropPrefab; // El prefab del steak
+    public Transform puzzleDoor;
     public int currentHealth;
-
     private Animator anim;
     private Rigidbody2D rb;
+    private SemiBoss semiBoss; // Referencia al script SemiBoss
 
-private SemiBoss semiBoss; // Referencia al script SemiBoss
-
-private void Start()
-{
-    anim = GetComponent<Animator>();
-    rb = GetComponent<Rigidbody2D>();
-    semiBoss = GetComponent<SemiBoss>(); // ⬅️ IMPORTANTE para detectar la fase
-}
-
-IEnumerator FlashRed()
-{
-    SpriteRenderer sr = GetComponent<SpriteRenderer>();
-    if (sr != null)
+    private void Start()
     {
-        sr.color = Color.red;
-        yield return new WaitForSeconds(0.1f); // duración del flash
-        sr.color = Color.white;
-    }
-}
+        anim = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody2D>();
+        semiBoss = GetComponent<SemiBoss>();
 
-
-public void TakeDamage(int amount, Transform attacker)
-{
-    // Si está en modo espada, reducir el daño a un 5%
-    if (semiBoss != null && semiBoss.currentState == BossState.SwordPhase)
-    {
-        amount = Mathf.Max(1, Mathf.RoundToInt(amount * 0.05f));
+        currentHealth = 100; // o usar Mathf.RoundToInt(semiBoss.maxHealth);
     }
 
-    currentHealth -= amount;
-    Debug.Log("🩸 Enemigo recibió daño. Vida actual: " + currentHealth);
+    public void TakeDamage(int amount, Transform attacker)
+    {
+        // Si está en modo espada, reducir el daño a un 5%
+        if (semiBoss != null && semiBoss.currentState == BossState.SwordPhase)
+        {
+            amount = Mathf.Max(1, Mathf.RoundToInt(amount * 0.05f));
+        }
+
+        // Aplicar daño
+        currentHealth -= amount;
+        Debug.Log("🩸 Enemigo recibió daño. Vida actual: " + currentHealth);
+
+        // Notificar al semiBoss cuánta vida perdió (para manejo interno)
+        if (semiBoss != null)
+        {
+            semiBoss.RegisterDamage(amount);
+        }
+
+        // Reacción visual
+        if (anim != null)
+            anim.SetTrigger("Hit");
+
+        StartCoroutine(Blink());
+
+        // Knockback
+        if (rb != null && attacker != null)
+        {
+            Vector2 dir = (transform.position - attacker.position).normalized;
+            rb.AddForce(dir * 2f, ForceMode2D.Impulse);
+        }
+
+        // Verificar muerte
+        if (currentHealth <= 0)
+            Die();
+    }
+
+    private IEnumerator Blink()
+    {
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (sr == null) yield break;
+
+        for (int i = 0; i < 3; i++)
+        {
+            sr.enabled = false;
+            yield return new WaitForSeconds(0.05f);
+            sr.enabled = true;
+            yield return new WaitForSeconds(0.05f);
+        }
+    }
+
+private void Die()
+{
+    Debug.Log("☠️ Enemigo eliminado.");
 
     if (anim != null)
-        anim.SetTrigger("Hit");
+        anim.SetTrigger("Death");
 
-    StartCoroutine(Blink());
+    // Desactivar colisión y movimiento
+    Collider2D col = GetComponent<Collider2D>();
+    if (col != null) col.enabled = false;
 
-    if (rb != null && attacker != null)
+    Enemy_Movement movement = GetComponent<Enemy_Movement>();
+    if (movement != null) movement.enabled = false;
+
+    if (rb != null)
     {
-        Vector2 dir = (transform.position - attacker.position).normalized;
-        rb.AddForce(dir * 2f, ForceMode2D.Impulse);
+        rb.linearVelocity = Vector2.zero;
+        rb.bodyType = RigidbodyType2D.Static;
     }
 
-    if (currentHealth <= 0)
-        Die();
+    if (healthDropPrefab != null)
+    {
+        Instantiate(healthDropPrefab, transform.position, Quaternion.identity);
+    }
+
+    // 🧱 Mover la puerta hacia arriba si está asignada
+    if (puzzleDoor != null)
+        StartCoroutine(OpenPuzzleDoor(puzzleDoor, new Vector3(0f, 8f, 0f), 2f));
+
+    // Destruir después de 1.5 segundos
+    Destroy(gameObject, 1.5f);
 }
-
-
-
-IEnumerator Blink()
+private IEnumerator OpenPuzzleDoor(Transform obj, Vector3 offset, float duration)
 {
-    SpriteRenderer sr = GetComponent<SpriteRenderer>();
-    if (sr == null) yield break;
+    Vector3 start = obj.position;
+    Vector3 end = start + offset;
+    float elapsed = 0f;
 
-    for (int i = 0; i < 3; i++)
+    while (elapsed < duration)
     {
-        sr.enabled = false;
-        yield return new WaitForSeconds(0.05f);
-        sr.enabled = true;
-        yield return new WaitForSeconds(0.05f);
+        obj.position = Vector3.Lerp(start, end, elapsed / duration);
+        elapsed += Time.deltaTime;
+        yield return null;
     }
+
+    obj.position = end; // asegurar que termine exacto
 }
 
-
-
-
-
-    private void Die()
-    {
-        Debug.Log("☠️ Enemigo eliminado.");
-
-        if (anim != null)
-            anim.SetTrigger("Death"); // Animación de muerte (opcional)
-
-        // Desactiva colisión y movimiento
-        Collider2D col = GetComponent<Collider2D>();
-        if (col != null) col.enabled = false;
-
-        Enemy_Movement movement = GetComponent<Enemy_Movement>();
-        if (movement != null) movement.enabled = false;
-
-        if (rb != null)
-         rb.linearVelocity = Vector2.zero;
-         rb.linearVelocity = Vector2.zero;
-         rb.bodyType = RigidbodyType2D.Static; 
-        if (healthDropPrefab != null)
-{
-    Instantiate(healthDropPrefab, transform.position, Quaternion.identity);
 }
 
-
-        // Destruye el objeto después de 1.5 segundos (para dejar animación de muerte)
-        Destroy(gameObject, 1.5f);
-    }
-    
-}
 

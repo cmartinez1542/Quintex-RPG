@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Enemy_Movement : MonoBehaviour
 {
+     public AudioSource TourchSound;
+     public AudioSource TourchAttackSound;
     private bool isKnockedBack = false;
 
     [Header("Attack Settings")]
@@ -34,6 +36,7 @@ public Vector3 attackPointOffset = new Vector3(1.5f, 0f, 0f);
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+
     }
 
     private void Update()
@@ -43,6 +46,10 @@ public Vector3 attackPointOffset = new Vector3(1.5f, 0f, 0f);
             GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
             if (players.Length > 0)
                 player = GetClosestPlayer(players).transform;
+                        if (TourchSound != null)
+    {
+        TourchSound.Play();
+    }
         }
     }
 
@@ -164,6 +171,11 @@ private void FlipToFacePlayer()
         if (anim != null)
             anim.SetTrigger("Attack");
 
+        if (TourchAttackSound != null)
+    {
+        TourchAttackSound.Play();
+    }
+
         yield return new WaitForSeconds(attackCooldown);
     }
 }
@@ -174,7 +186,7 @@ private void FlipToFacePlayer()
         Collider2D[] hits = Physics2D.OverlapCircleAll(
             attackPoint.position, weaponRange, LayerMask.GetMask("Player"));
 
-        Debug.Log($"🎯 Jugadores detectados: {hits.Length}");
+        Debug.Log($"Jugadores detectados: {hits.Length}");
 
         foreach (Collider2D hit in hits)
         {
@@ -184,7 +196,7 @@ private void FlipToFacePlayer()
             if (playerHealth != null)
             {
                 playerHealth.ChangeHealth(-damage);
-                Debug.Log("✅ Daño aplicado al jugador.");
+                Debug.Log("Daño aplicado al jugador.");
             }
 
             if (playerMovement != null)

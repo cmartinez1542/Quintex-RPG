@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public Sprite[] playerOutfits; // Array of outfit sprites
     public Animator [] animator; // Array of animators
     public PlayerMovement movement;
+    public Player_Health health;
     public RuntimeAnimatorController[] playerAnimatorControllers;
 
 
@@ -53,6 +54,8 @@ public class GameManager : MonoBehaviour
         Sprite outfit = (index < playerOutfits.Length) ? playerOutfits[index] : null;
         
         PlayerMovement movement = playerInput.GetComponent<PlayerMovement>();
+
+        Player_Health health = playerInput.GetComponent<Player_Health>();
         
         Debug.Log("Assigning player to spawn point: " + index);
         playerInput.transform.position = spawnPoints[index].position;
@@ -87,6 +90,30 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError($"Animator assignment failed. Animator found: {animator != null}, Animator Controllers array length: {playerAnimatorControllers.Length}, Index: {index}");
         }
+        // Asignar AudioManager automáticamente al nuevo jugador
+Player_Combat combat = playerInput.GetComponent<Player_Combat>();
+AudioManager audioManager = FindObjectOfType<AudioManager>();
+if (combat != null && audioManager != null)
+{
+    combat.audiomanager = audioManager;
+    Debug.Log($"🔊 AudioManager asignado correctamente al jugador {index}");
+}
+else
+{
+    Debug.LogWarning("❌ No se pudo asignar el AudioManager al jugador.");
+}
+
+PlayerMovement2 dash = playerInput.GetComponent<PlayerMovement2>();
+AudioManager audioManager1 = FindObjectOfType<AudioManager>();
+if (dash != null && audioManager != null)
+{
+    dash.audiomanager = audioManager1;
+    Debug.Log($"🔊 AudioManager asignado correctamente al jugador {index}");
+}
+else
+{
+    Debug.LogWarning("❌ No se pudo asignar el AudioManager al jugador.");
+}
 
         if (SceneManager.GetActiveScene().name == "Boss_Level")
         {

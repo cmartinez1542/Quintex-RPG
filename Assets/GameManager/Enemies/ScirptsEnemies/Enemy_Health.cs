@@ -9,6 +9,9 @@ public class Enemy_Health : MonoBehaviour
 
     private Animator anim;
     private Rigidbody2D rb;
+    public ParticleSystem hitEffect;
+    public Color particleColor = Color.white;
+    public SpriteFlasher flasher;
 
     private void Start()
     {
@@ -28,15 +31,57 @@ IEnumerator FlashRed()
 }
 
 
+public void PlayHitParticles(int damage, Vector2 hitDirection)
+{
+    if (hitEffect != null)
+    {
+        // Offset the position slightly *behind* the enemy, in the opposite direction of the hit
+        float offsetDistance = -1.3f; // ← adjust this if needed
+        Vector3 spawnOffset = -hitDirection.normalized * offsetDistance;
+        hitEffect.transform.position = transform.position + spawnOffset;
+
+        // Optional rotation for visual alignment
+        float angle = Mathf.Atan2(hitDirection.y, hitDirection.x) * Mathf.Rad2Deg;
+        hitEffect.transform.rotation = Quaternion.Euler(0f, 0f, angle);
+
+        // Particle velocity in hit direction
+        var velocity = hitEffect.velocityOverLifetime;
+        velocity.enabled = true;
+        velocity.space = ParticleSystemSimulationSpace.World;
+        velocity.x = new ParticleSystem.MinMaxCurve(hitDirection.normalized.x * 5f);
+        velocity.y = new ParticleSystem.MinMaxCurve(hitDirection.normalized.y * 5f);
+
+        // Adjust emission burst based on damage
+        var main = hitEffect.main;
+        main.startColor = particleColor;
+
+        var emission = hitEffect.emission;
+        ParticleSystem.Burst[] bursts = new ParticleSystem.Burst[emission.burstCount];
+        emission.GetBursts(bursts);
+
+        if (bursts.Length > 0)
+        {
+            bursts[0].count = new ParticleSystem.MinMaxCurve(damage * 3);
+            emission.SetBursts(bursts);
+        }
+
+        hitEffect.Play();
+    }
+}
+
+
+
+
 public void TakeDamage(int amount, Transform attacker)
 {
     currentHealth -= amount;
-    Debug.Log("🩸 Enemigo recibió daño. Vida actual: " + currentHealth);
+    Debug.Log(" Enemigo recibió daño. Vida actual: " + currentHealth);
 
     if (anim != null)
         anim.SetTrigger("Hit");
 
     StartCoroutine(Blink());
+    flasher.Flash(0.3f);
 
     if (rb != null)
     {
@@ -69,7 +114,7 @@ IEnumerator Blink()
 
     private void Die()
     {
-        Debug.Log("☠️ Enemigo eliminado.");
+        Debug.Log(" Enemigo eliminado.");
 
         if (anim != null)
             anim.SetTrigger("Death"); // Animación de muerte (opcional)
